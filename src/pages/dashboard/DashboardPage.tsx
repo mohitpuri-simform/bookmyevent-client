@@ -1,0 +1,39 @@
+import { CalendarCheck, PartyPopper, Ticket } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '../../hooks/auth/useAuth'
+import { ROLES } from '../../shared/constants/auth/role'
+
+export function DashboardPage() {
+  const { user } = useAuth()
+
+  if (!user) return null
+
+  const isOrganiser = user.role === ROLES.ORGANISER
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-16">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Welcome, {user.name}</h1>
+        <Badge variant="secondary">{isOrganiser ? 'Organiser' : 'User'}</Badge>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <span className="mb-1 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {isOrganiser ? <CalendarCheck className="size-5" /> : <Ticket className="size-5" />}
+          </span>
+          <CardTitle>{isOrganiser ? 'Organiser dashboard' : 'Your bookings'}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <PartyPopper className="size-4 shrink-0" />
+            {isOrganiser
+              ? 'Manage your events and view bookings for them here once event management ships.'
+              : 'Browse events and hold a seat once the event catalogue ships.'}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
