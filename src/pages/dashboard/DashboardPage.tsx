@@ -1,6 +1,9 @@
 import { CalendarCheck, PartyPopper, Ticket } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { routes } from '../../constants/routes'
 import { useAuth } from '../../hooks/auth/useAuth'
 import { ROLES } from '../../shared/constants/auth/role'
 
@@ -25,13 +28,20 @@ export function DashboardPage() {
           </span>
           <CardTitle>{isOrganiser ? 'Organiser dashboard' : 'Your bookings'}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <PartyPopper className="size-4 shrink-0" />
             {isOrganiser
-              ? 'Manage your events and view bookings for them here once event management ships.'
-              : 'Browse events and hold a seat once the event catalogue ships.'}
+              ? 'Manage your events and their seating sections.'
+              : 'Browse events and see their seating layout.'}
           </p>
+          <Button asChild className="w-fit">
+            {isOrganiser ? (
+              <Link to={routes.organizer.events}>My events</Link>
+            ) : (
+              <Link to={routes.events.list}>Browse events</Link>
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>

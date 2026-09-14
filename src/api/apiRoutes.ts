@@ -9,4 +9,14 @@ export const apiRoutes = {
     resetPassword: '/auth/reset-password',
   },
   profile: '/profile',
+  events: {
+    list: '/events',
+    detail: (eventId: string) => `/events/${eventId}`,
+    sections: (eventId: string) => `/events/${eventId}/sections`,
+    section: (eventId: string, sectionId: string) => `/events/${eventId}/sections/${sectionId}`,
+    reorderSections: (eventId: string) => `/events/${eventId}/sections/reorder`,
+  },
+  organiser: {
+    events: '/organiser/events',
+  },
 } as const

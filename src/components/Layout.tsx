@@ -44,6 +44,9 @@ export function Layout() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild>
+              <Link to={routes.events.list}>Events</Link>
+            </Button>
             {user ? (
               <>
                 <Button variant="ghost" asChild>

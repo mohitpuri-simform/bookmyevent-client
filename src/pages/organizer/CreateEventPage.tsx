@@ -1,0 +1,65 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CalendarCheck, Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useCreateEventMutation } from '../../hooks/events/useCreateEventMutation'
+import { createEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
+
+export function CreateEventPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateEventPayload>({
+    resolver: zodResolver(createEventSchema),
+  })
+
+  const createEventMutation = useCreateEventMutation()
+
+  function onSubmit(data: CreateEventPayload) {
+    createEventMutation.mutate(data)
+  }
+
+  return (
+    <div className="flex flex-1 items-center justify-center px-6 py-16">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="items-center text-center">
+          <span className="mb-1 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <CalendarCheck className="size-5" />
+          </span>
+          <CardTitle className="text-xl">Create an event</CardTitle>
+          <CardDescription>Set the basics, then add seating sections next</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="name">Event name</Label>
+              <Input id="name" type="text" aria-invalid={!!errors.name} {...register('name')} />
+              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="venue">Venue</Label>
+              <Input id="venue" type="text" aria-invalid={!!errors.venue} {...register('venue')} />
+              {errors.venue && <p className="text-xs text-destructive">{errors.venue.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="date">Date</Label>
+              <Input id="date" type="date" aria-invalid={!!errors.date} {...register('date')} />
+              {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
+            </div>
+
+            <Button type="submit" className="w-full" disabled={createEventMutation.isPending}>
+              {createEventMutation.isPending && <Loader2 className="animate-spin" />}
+              {createEventMutation.isPending ? 'Creating event…' : 'Create event'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
