@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PasswordInput } from '@/components/ui/password-input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
 import { routes } from '../../constants/routes'
 import { useRegisterMutation } from '../../hooks/auth/useRegisterMutation'
-import { registerSchema, type RegisterPayload } from '../../schemas/auth/registerSchema'
+import { registerSchema, type RegisterFormValues } from '../../schemas/auth/registerSchema'
 import { ROLES } from '../../shared/constants/auth/role'
 import type { Role } from '../../types/auth'
 
@@ -35,15 +36,15 @@ export function RegisterPage() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<RegisterPayload>({
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: ROLES.USER },
   })
 
   const registerMutation = useRegisterMutation()
 
-  function onSubmit(data: RegisterPayload) {
-    registerMutation.mutate(data)
+  function onSubmit({ confirmPassword: _confirmPassword, ...payload }: RegisterFormValues) {
+    registerMutation.mutate(payload)
   }
 
   return (
@@ -84,15 +85,27 @@ export function RegisterPage() {
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 autoComplete="new-password"
                 aria-invalid={!!errors.password}
                 {...register('password')}
               />
               {errors.password && (
                 <p className="text-xs text-destructive">{errors.password.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="confirmPassword">Confirm password</Label>
+              <PasswordInput
+                id="confirmPassword"
+                autoComplete="new-password"
+                aria-invalid={!!errors.confirmPassword}
+                {...register('confirmPassword')}
+              />
+              {errors.confirmPassword && (
+                <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
               )}
             </div>
 

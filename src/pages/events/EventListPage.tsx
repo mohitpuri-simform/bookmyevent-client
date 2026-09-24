@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { routes } from '../../constants/routes'
 import { useEventsQuery } from '../../hooks/events/useEventsQuery'
+import { formatVenue } from '../../lib/venue'
 
 export function EventListPage() {
   const { data: events, isLoading } = useEventsQuery()
@@ -32,7 +33,7 @@ export function EventListPage() {
                 <CardTitle>{event.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">{event.venue}</p>
+                <p className="text-sm text-muted-foreground">{formatVenue(event)}</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(event.date).toLocaleDateString()}
                 </p>

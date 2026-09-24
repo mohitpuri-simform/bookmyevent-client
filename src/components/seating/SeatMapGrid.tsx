@@ -1,10 +1,13 @@
 import { cn } from '@/lib/utils'
-import type { SeatStatus } from '../../types/sections'
+
+/** Display-level status: splits the backend's `HELD` into "by me" vs "by someone else" (CLAUDE.md §Core UX states). */
+export type SeatDisplayStatus = 'AVAILABLE' | 'HELD_BY_ME' | 'HELD_BY_OTHER' | 'BOOKED'
 
 interface SeatMapGridSeat {
+  id: string
   row: number
   col: number
-  status: SeatStatus
+  status: SeatDisplayStatus
 }
 
 interface SeatMapGridProps {
@@ -12,12 +15,16 @@ interface SeatMapGridProps {
   seatsPerRow: number
   aisleAfterSeat?: number | null
   seats: SeatMapGridSeat[]
+  onSeatClick?: (seatId: string) => void
+  disabled?: boolean
 }
 
-const STATUS_STYLES: Record<SeatStatus, string> = {
-  AVAILABLE: 'border-primary/40 bg-primary/10 text-primary',
-  HELD: 'border-border bg-muted text-muted-foreground',
-  BOOKED: 'border-border bg-foreground/10 text-muted-foreground',
+const STATUS_STYLES: Record<SeatDisplayStatus, string> = {
+  AVAILABLE: 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer',
+  HELD_BY_ME:
+    'border-amber-500/60 bg-amber-500/15 text-amber-700 dark:text-amber-400 cursor-pointer',
+  HELD_BY_OTHER: 'border-border bg-muted text-muted-foreground cursor-not-allowed',
+  BOOKED: 'border-border bg-foreground/10 text-muted-foreground cursor-not-allowed',
 }
 
 const SEAT_SIZE = '1.75rem'
@@ -53,7 +60,14 @@ function displayRowLabel(row: number, totalRows: number): string {
   return rowLabel(totalRows - row + 1)
 }
 
-export function SeatMapGrid({ rows, seatsPerRow, aisleAfterSeat, seats }: SeatMapGridProps) {
+export function SeatMapGrid({
+  rows,
+  seatsPerRow,
+  aisleAfterSeat,
+  seats,
+  onSeatClick,
+  disabled,
+}: SeatMapGridProps) {
   const hasAisle = aisleAfterSeat != null
   const columnTemplate = Array.from({ length: seatsPerRow }, () => SEAT_SIZE)
   if (hasAisle) {
@@ -79,22 +93,32 @@ export function SeatMapGrid({ rows, seatsPerRow, aisleAfterSeat, seats }: SeatMa
           gridTemplateRows: `repeat(${rows}, ${SEAT_SIZE})`,
         }}
       >
-        {seats.map((seat) => (
-          <div
-            key={`${seat.row}-${seat.col}`}
-            title={`Row ${displayRowLabel(seat.row, rows)}, Seat ${seat.col}`}
-            className={cn(
-              'flex items-center justify-center rounded-md border text-[0.6rem] font-medium',
-              STATUS_STYLES[seat.status],
-            )}
-            style={{
-              gridColumnStart: seatColumnStart(seat.col, aisleAfterSeat),
-              gridRowStart: seat.row,
-            }}
-          >
-            {seat.col}
-          </div>
-        ))}
+        {seats.map((seat) => {
+          const selectable =
+            !disabled &&
+            (seat.status === 'AVAILABLE' || seat.status === 'HELD_BY_ME') &&
+            !!onSeatClick
+
+          return (
+            <button
+              key={`${seat.row}-${seat.col}`}
+              type="button"
+              disabled={!selectable}
+              onClick={() => onSeatClick?.(seat.id)}
+              title={`Row ${displayRowLabel(seat.row, rows)}, Seat ${seat.col}`}
+              className={cn(
+                'flex items-center justify-center rounded-md border text-[0.6rem] font-medium transition-colors disabled:cursor-not-allowed',
+                STATUS_STYLES[seat.status],
+              )}
+              style={{
+                gridColumnStart: seatColumnStart(seat.col, aisleAfterSeat),
+                gridRowStart: seat.row,
+              }}
+            >
+              {seat.col}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

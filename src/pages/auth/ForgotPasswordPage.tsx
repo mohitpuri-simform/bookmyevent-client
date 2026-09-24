@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { Label } from '@/components/ui/label'
+import { PasswordInput } from '@/components/ui/password-input'
 import { routes } from '../../constants/routes'
 import { useForgotPasswordMutation } from '../../hooks/auth/useForgotPasswordMutation'
 import { useResetPasswordMutation } from '../../hooks/auth/useResetPasswordMutation'
@@ -147,9 +148,8 @@ export function ForgotPasswordPage() {
 
               <div className="flex flex-col gap-2">
                 <Label htmlFor="newPassword">New password</Label>
-                <Input
+                <PasswordInput
                   id="newPassword"
-                  type="password"
                   autoComplete="new-password"
                   aria-invalid={!!resetForm.formState.errors.newPassword}
                   {...resetForm.register('newPassword')}
@@ -163,9 +163,8 @@ export function ForgotPasswordPage() {
 
               <div className="flex flex-col gap-2">
                 <Label htmlFor="confirmPassword">Confirm new password</Label>
-                <Input
+                <PasswordInput
                   id="confirmPassword"
-                  type="password"
                   autoComplete="new-password"
                   aria-invalid={!!resetForm.formState.errors.confirmPassword}
                   {...resetForm.register('confirmPassword')}

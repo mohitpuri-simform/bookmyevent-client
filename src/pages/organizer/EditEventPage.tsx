@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CalendarCheck, Loader2 } from 'lucide-react'
+import { AlertTriangle, CalendarCheck, Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -7,13 +7,19 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useEventQuery } from '../../hooks/events/useEventQuery'
+import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
 import { useUpdateEventMutation } from '../../hooks/events/useUpdateEventMutation'
 import { createEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
 
+function toDatetimeLocalValue(isoDate: string): string {
+  const date = new Date(isoDate)
+  const offsetMs = date.getTimezoneOffset() * 60_000
+  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16)
+}
+
 export function EditEventPage() {
   const { eventId } = useParams<{ eventId: string }>()
-  const { data: event } = useEventQuery(eventId)
+  const { data: event, isLoading, isError } = useMyEventQuery(eventId)
   const updateEventMutation = useUpdateEventMutation(eventId!)
 
   const {
@@ -29,14 +35,36 @@ export function EditEventPage() {
     if (event) {
       reset({
         name: event.name,
-        venue: event.venue,
+        venueStreet: event.venueStreet,
+        venueCity: event.venueCity,
+        venueState: event.venueState,
         date: event.date.slice(0, 10),
+        endDate: toDatetimeLocalValue(event.endDate),
       })
     }
   }, [event, reset])
 
   function onSubmit(data: CreateEventPayload) {
     updateEventMutation.mutate(data)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (isError || !event) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 py-24 text-center">
+        <AlertTriangle className="size-8 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          This event doesn't exist, or isn't one of yours.
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -58,15 +86,61 @@ export function EditEventPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="venue">Venue</Label>
-              <Input id="venue" type="text" aria-invalid={!!errors.venue} {...register('venue')} />
-              {errors.venue && <p className="text-xs text-destructive">{errors.venue.message}</p>}
+              <Label htmlFor="venueStreet">Street</Label>
+              <Input
+                id="venueStreet"
+                type="text"
+                aria-invalid={!!errors.venueStreet}
+                {...register('venueStreet')}
+              />
+              {errors.venueStreet && (
+                <p className="text-xs text-destructive">{errors.venueStreet.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="venueCity">City</Label>
+              <Input
+                id="venueCity"
+                type="text"
+                aria-invalid={!!errors.venueCity}
+                {...register('venueCity')}
+              />
+              {errors.venueCity && (
+                <p className="text-xs text-destructive">{errors.venueCity.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="venueState">State</Label>
+              <Input
+                id="venueState"
+                type="text"
+                aria-invalid={!!errors.venueState}
+                {...register('venueState')}
+              />
+              {errors.venueState && (
+                <p className="text-xs text-destructive">{errors.venueState.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="date">Start date</Label>
               <Input id="date" type="date" aria-invalid={!!errors.date} {...register('date')} />
               {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="endDate">Expires at</Label>
+              <Input
+                id="endDate"
+                type="datetime-local"
+                aria-invalid={!!errors.endDate}
+                {...register('endDate')}
+              />
+              {errors.endDate && (
+                <p className="text-xs text-destructive">{errors.endDate.message}</p>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={updateEventMutation.isPending}>

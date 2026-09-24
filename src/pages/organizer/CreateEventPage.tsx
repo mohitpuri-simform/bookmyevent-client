@@ -42,15 +42,61 @@ export function CreateEventPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="venue">Venue</Label>
-              <Input id="venue" type="text" aria-invalid={!!errors.venue} {...register('venue')} />
-              {errors.venue && <p className="text-xs text-destructive">{errors.venue.message}</p>}
+              <Label htmlFor="venueStreet">Street</Label>
+              <Input
+                id="venueStreet"
+                type="text"
+                aria-invalid={!!errors.venueStreet}
+                {...register('venueStreet')}
+              />
+              {errors.venueStreet && (
+                <p className="text-xs text-destructive">{errors.venueStreet.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="venueCity">City</Label>
+              <Input
+                id="venueCity"
+                type="text"
+                aria-invalid={!!errors.venueCity}
+                {...register('venueCity')}
+              />
+              {errors.venueCity && (
+                <p className="text-xs text-destructive">{errors.venueCity.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="venueState">State</Label>
+              <Input
+                id="venueState"
+                type="text"
+                aria-invalid={!!errors.venueState}
+                {...register('venueState')}
+              />
+              {errors.venueState && (
+                <p className="text-xs text-destructive">{errors.venueState.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="date">Start date</Label>
               <Input id="date" type="date" aria-invalid={!!errors.date} {...register('date')} />
               {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="endDate">Expires at</Label>
+              <Input
+                id="endDate"
+                type="datetime-local"
+                aria-invalid={!!errors.endDate}
+                {...register('endDate')}
+              />
+              {errors.endDate && (
+                <p className="text-xs text-destructive">{errors.endDate.message}</p>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={createEventMutation.isPending}>

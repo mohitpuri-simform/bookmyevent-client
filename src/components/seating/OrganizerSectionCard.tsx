@@ -165,7 +165,12 @@ export function OrganizerSectionCard({
           rows={section.rows}
           seatsPerRow={section.seatsPerRow}
           aisleAfterSeat={section.aisleAfterSeat}
-          seats={section.seats}
+          seats={section.seats.map((seat) => ({
+            id: seat.id,
+            row: seat.row,
+            col: seat.col,
+            status: seat.status === 'HELD' ? 'HELD_BY_OTHER' : seat.status,
+          }))}
         />
       </div>
     </div>

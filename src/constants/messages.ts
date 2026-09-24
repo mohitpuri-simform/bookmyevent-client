@@ -18,4 +18,5 @@ export const messages = {
     },
   },
   fallbackError: 'Something went wrong. Please try again.',
+  serviceUnavailable: 'System temporarily unavailable, please try again.',
 } as const

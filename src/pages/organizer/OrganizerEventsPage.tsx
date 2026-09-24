@@ -1,12 +1,14 @@
-import { CalendarCheck, Loader2, Plus } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { CalendarCheck, Loader2, Plus, TicketCheck } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { routes } from '../../constants/routes'
 import { useMyEventsQuery } from '../../hooks/events/useMyEventsQuery'
+import { formatVenue } from '../../lib/venue'
 
 export function OrganizerEventsPage() {
   const { data: events, isLoading } = useMyEventsQuery()
+  const navigate = useNavigate()
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-16">
@@ -44,11 +46,25 @@ export function OrganizerEventsPage() {
                 </span>
                 <CardTitle>{event.name}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{event.venue}</p>
+              <CardContent className="flex flex-col gap-2">
+                <p className="text-sm text-muted-foreground">{formatVenue(event)}</p>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(event.date).toLocaleDateString()}
+                  {new Date(event.date).toLocaleDateString()} &ndash;{' '}
+                  {new Date(event.endDate).toLocaleString()}
                 </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 w-fit"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    navigate(routes.organizer.eventBookings(event.id))
+                  }}
+                >
+                  <TicketCheck />
+                  Bookings
+                </Button>
               </CardContent>
             </Card>
           </Link>

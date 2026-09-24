@@ -1,4 +1,4 @@
-import { LogOut, Ticket, UserRound } from 'lucide-react'
+import { LogOut, Ticket, TicketCheck, UserRound } from 'lucide-react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -74,6 +74,12 @@ export function Layout() {
                       <Link to={routes.profile}>
                         <UserRound />
                         Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={routes.bookings.list}>
+                        <TicketCheck />
+                        My bookings
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

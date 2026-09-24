@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Pencil, Plus } from 'lucide-react'
+import { AlertTriangle, Loader2, Pencil, Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
@@ -11,20 +11,20 @@ import { OrganizerSectionCard } from '../../components/seating/OrganizerSectionC
 import { SeatMapGrid } from '../../components/seating/SeatMapGrid'
 import { StageBanner } from '../../components/seating/StageBanner'
 import { routes } from '../../constants/routes'
-import { useEventQuery } from '../../hooks/events/useEventQuery'
+import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
 import { useCreateSectionMutation } from '../../hooks/sections/useCreateSectionMutation'
 import { useReorderSectionsMutation } from '../../hooks/sections/useReorderSectionsMutation'
 import { useSectionsQuery } from '../../hooks/sections/useSectionsQuery'
+import { formatVenue } from '../../lib/venue'
 import {
   createSectionSchema,
   type CreateSectionFormInput,
   type CreateSectionPayload,
 } from '../../schemas/sections/createSectionSchema'
-import type { SeatStatus } from '../../types/sections'
 
 export function EventSectionsPage() {
   const { eventId } = useParams<{ eventId: string }>()
-  const { data: event } = useEventQuery(eventId)
+  const { data: event, isLoading: isLoadingEvent, isError: isEventError } = useMyEventQuery(eventId)
   const { data: sections, isLoading: isLoadingSections } = useSectionsQuery(eventId)
   const createSectionMutation = useCreateSectionMutation(eventId!)
   const reorderSectionsMutation = useReorderSectionsMutation(eventId!)
@@ -50,10 +50,10 @@ export function EventSectionsPage() {
     const seatsPerRow = Number(previewSeatsPerRow) || 0
     if (rows < 1 || seatsPerRow < 1 || rows > 50 || seatsPerRow > 50) return []
 
-    const seats: { row: number; col: number; status: SeatStatus }[] = []
+    const seats: { id: string; row: number; col: number; status: 'AVAILABLE' }[] = []
     for (let row = 1; row <= rows; row++) {
       for (let col = 1; col <= seatsPerRow; col++) {
-        seats.push({ row, col, status: 'AVAILABLE' })
+        seats.push({ id: `${row}-${col}`, row, col, status: 'AVAILABLE' })
       }
     }
     return seats
@@ -77,23 +77,38 @@ export function EventSectionsPage() {
     reorderSectionsMutation.mutate(reordered)
   }
 
+  if (isLoadingEvent) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (isEventError || !event) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 py-24 text-center">
+        <AlertTriangle className="size-8 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          This event doesn't exist, or isn't one of yours.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-16">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {event ? event.name : 'Event seating'}
-          </h1>
-          {event && <p className="text-sm text-muted-foreground">{event.venue}</p>}
+          <h1 className="text-2xl font-semibold tracking-tight">{event.name}</h1>
+          <p className="text-sm text-muted-foreground">{formatVenue(event)}</p>
         </div>
-        {event && (
-          <Button variant="outline" size="sm" asChild>
-            <Link to={routes.organizer.editEvent(event.id)}>
-              <Pencil />
-              Edit event
-            </Link>
-          </Button>
-        )}
+        <Button variant="outline" size="sm" asChild>
+          <Link to={routes.organizer.editEvent(event.id)}>
+            <Pencil />
+            Edit event
+          </Link>
+        </Button>
       </div>
 
       <Card>
