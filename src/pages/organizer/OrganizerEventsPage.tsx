@@ -6,6 +6,24 @@ import { routes } from '../../constants/routes'
 import { useMyEventsQuery } from '../../hooks/events/useMyEventsQuery'
 import { formatVenue } from '../../lib/venue'
 
+function SeatOccupancy({ bookedSeats, totalSeats }: { bookedSeats: number; totalSeats: number }) {
+  const emptySeats = totalSeats - bookedSeats
+  const percentBooked = totalSeats > 0 ? Math.round((bookedSeats / totalSeats) * 100) : 0
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${percentBooked}%` }} />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">{bookedSeats}</span> booked &middot;{' '}
+        <span className="font-medium text-foreground">{emptySeats}</span> empty &middot;{' '}
+        {totalSeats} total
+      </p>
+    </div>
+  )
+}
+
 export function OrganizerEventsPage() {
   const { data: events, isLoading } = useMyEventsQuery()
   const navigate = useNavigate()
@@ -52,6 +70,12 @@ export function OrganizerEventsPage() {
                   {new Date(event.date).toLocaleDateString()} &ndash;{' '}
                   {new Date(event.endDate).toLocaleString()}
                 </p>
+
+                <SeatOccupancy
+                  bookedSeats={event.bookedSeats ?? 0}
+                  totalSeats={event.totalSeats ?? 0}
+                />
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -63,7 +87,7 @@ export function OrganizerEventsPage() {
                   }}
                 >
                   <TicketCheck />
-                  Bookings
+                  View bookings
                 </Button>
               </CardContent>
             </Card>

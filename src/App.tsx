@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { GuestRoute } from './components/GuestRoute'
+import { HomeRoute } from './components/HomeRoute'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { routes } from './constants/routes'
@@ -9,7 +10,6 @@ import { RegisterPage } from './pages/auth/RegisterPage'
 import { BookingDetailPage } from './pages/bookings/BookingDetailPage'
 import { MyBookingsPage } from './pages/bookings/MyBookingsPage'
 import { CheckoutPage } from './pages/checkout/CheckoutPage'
-import { DashboardPage } from './pages/dashboard/DashboardPage'
 import { EventListPage } from './pages/events/EventListPage'
 import { EventSeatMapPage } from './pages/events/EventSeatMapPage'
 import { HomePage } from './pages/home/HomePage'
@@ -25,21 +25,28 @@ function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path={routes.home} element={<HomePage />} />
-        <Route path={routes.events.list} element={<EventListPage />} />
+        <Route element={<HomeRoute />}>
+          <Route path={routes.home} element={<HomePage />} />
+        </Route>
+
         <Route element={<GuestRoute />}>
           <Route path={routes.auth.login} element={<LoginPage />} />
           <Route path={routes.auth.register} element={<RegisterPage />} />
           <Route path={routes.auth.forgotPassword} element={<ForgotPasswordPage />} />
         </Route>
+
         <Route element={<ProtectedRoute />}>
-          <Route path={routes.events.detail(':eventId')} element={<EventSeatMapPage />} />
-          <Route path={routes.dashboard} element={<DashboardPage />} />
           <Route path={routes.profile} element={<ProfilePage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
+          <Route path={routes.events.list} element={<EventListPage />} />
+          <Route path={routes.events.detail(':eventId')} element={<EventSeatMapPage />} />
           <Route path={routes.checkout} element={<CheckoutPage />} />
           <Route path={routes.bookings.list} element={<MyBookingsPage />} />
           <Route path={routes.bookings.detail(':bookingId')} element={<BookingDetailPage />} />
         </Route>
+
         <Route element={<ProtectedRoute allowedRoles={[ROLES.ORGANISER]} />}>
           <Route path={routes.organizer.events} element={<OrganizerEventsPage />} />
           <Route path={routes.organizer.createEvent} element={<CreateEventPage />} />

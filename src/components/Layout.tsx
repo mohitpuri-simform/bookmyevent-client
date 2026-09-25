@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { routes } from '../constants/routes'
 import { useAuth } from '../hooks/auth/useAuth'
+import { ROLES } from '../shared/constants/auth/role'
 
 function initials(name: string): string {
   return name
@@ -44,14 +45,18 @@ export function Layout() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link to={routes.events.list}>Events</Link>
-            </Button>
+            {user?.role !== ROLES.ORGANISER && (
+              <Button variant="ghost" asChild>
+                <Link to={routes.events.list}>Events</Link>
+              </Button>
+            )}
             {user ? (
               <>
-                <Button variant="ghost" asChild>
-                  <Link to={routes.dashboard}>Dashboard</Link>
-                </Button>
+                {user.role === ROLES.ORGANISER && (
+                  <Button variant="ghost" asChild>
+                    <Link to={routes.organizer.events}>My events</Link>
+                  </Button>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="ml-1 rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
@@ -76,12 +81,14 @@ export function Layout() {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={routes.bookings.list}>
-                        <TicketCheck />
-                        My bookings
-                      </Link>
-                    </DropdownMenuItem>
+                    {user.role !== ROLES.ORGANISER && (
+                      <DropdownMenuItem asChild>
+                        <Link to={routes.bookings.list}>
+                          <TicketCheck />
+                          My bookings
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                       <LogOut />

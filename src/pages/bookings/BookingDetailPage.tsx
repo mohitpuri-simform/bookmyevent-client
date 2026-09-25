@@ -1,9 +1,9 @@
-import { AlertTriangle, ArrowLeft, Loader2, TicketCheck } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Loader2, MapPin } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { routes } from '../../constants/routes'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
+import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { formatVenue } from '../../lib/venue'
 
 export function BookingDetailPage() {
@@ -11,6 +11,7 @@ export function BookingDetailPage() {
   const { data: bookings, isLoading } = useMyBookingsQuery()
 
   const booking = bookings?.find((b) => b.id === bookingId)
+  const Icon = posterIcon(booking?.eventId ?? '')
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-6 px-6 py-16">
@@ -38,22 +39,33 @@ export function BookingDetailPage() {
       )}
 
       {booking && (
-        <Card>
-          <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
-            <CardTitle>{booking.event?.name ?? 'Event'}</CardTitle>
-            <TicketCheck className="size-5 shrink-0 text-primary" />
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4 text-sm">
+        <div className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10">
+          <div
+            className={`relative flex aspect-[16/9] items-center justify-center overflow-hidden bg-gradient-to-br p-6 ${posterGradient(booking.eventId)}`}
+          >
+            <Icon className="absolute size-24 text-foreground/10" />
+            <span className="relative line-clamp-3 text-center font-heading text-xl font-bold text-foreground/90">
+              {booking.event?.name ?? 'Event'}
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-4 p-5 text-sm">
             {booking.event && (
-              <div>
-                <p>{formatVenue(booking.event)}</p>
+              <div className="flex flex-col gap-0.5">
+                <p className="flex items-center gap-1.5 text-foreground">
+                  <MapPin className="size-3.5 shrink-0 text-muted-foreground" />
+                  {formatVenue(booking.event)}
+                </p>
                 <p className="text-muted-foreground">
-                  {new Date(booking.event.date).toLocaleString()}
+                  {new Date(booking.event.date).toLocaleString(undefined, {
+                    dateStyle: 'long',
+                    timeStyle: 'short',
+                  })}
                 </p>
               </div>
             )}
 
-            <div className="flex flex-col gap-2 border-t border-border pt-4">
+            <div className="flex flex-col gap-2 border-t border-dashed border-border pt-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Ticket reference</span>
                 <span className="font-mono">{booking.ticketRef}</span>
@@ -67,8 +79,8 @@ export function BookingDetailPage() {
                 <span>{new Date(booking.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -9,4 +9,8 @@ export interface Event {
   organiserId: string
   createdAt: string
   updatedAt: string
+  /** Only present on organiser-facing endpoints (/organiser/events*). */
+  totalSeats?: number
+  bookedSeats?: number
+  availableSeats?: number
 }

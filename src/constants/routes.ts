@@ -5,7 +5,6 @@ export const routes = {
     register: '/register',
     forgotPassword: '/forgot-password',
   },
-  dashboard: '/dashboard',
   profile: '/profile',
   events: {
     list: '/events',

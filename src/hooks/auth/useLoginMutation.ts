@@ -24,7 +24,7 @@ export function useLoginMutation() {
       if (response.status === HTTP_STATUS.OK) {
         invalidateQuery(queryClient, [queryKeys.auth.me])
         showSuccessToast(response.data.message)
-        const redirectTo = (location.state as { from?: string } | null)?.from ?? routes.dashboard
+        const redirectTo = (location.state as { from?: string } | null)?.from ?? routes.home
         navigate(redirectTo, { replace: true })
       } else {
         showErrorToast()

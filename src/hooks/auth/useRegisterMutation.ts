@@ -23,7 +23,7 @@ export function useRegisterMutation() {
       if (response.status === HTTP_STATUS.CREATED) {
         invalidateQuery(queryClient, [queryKeys.auth.me])
         showSuccessToast(response.data.message)
-        navigate(routes.dashboard, { replace: true })
+        navigate(routes.home, { replace: true })
       } else {
         showErrorToast()
       }

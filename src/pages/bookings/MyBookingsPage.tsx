@@ -1,8 +1,8 @@
-import { Loader2, TicketCheck } from 'lucide-react'
+import { Loader2, MapPin, TicketCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { routes } from '../../constants/routes'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
+import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { formatVenue } from '../../lib/venue'
 
 export function MyBookingsPage() {
@@ -10,7 +10,12 @@ export function MyBookingsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">My bookings</h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">My bookings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Your confirmed tickets, all in one place
+        </p>
+      </div>
 
       {isLoading && (
         <div className="flex items-center justify-center py-16">
@@ -19,32 +24,62 @@ export function MyBookingsPage() {
       )}
 
       {!isLoading && bookings?.length === 0 && (
-        <p className="text-sm text-muted-foreground">You don't have any confirmed bookings yet.</p>
+        <div className="flex flex-col items-center gap-2 py-16 text-center">
+          <TicketCheck className="size-10 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            You don't have any confirmed bookings yet.
+          </p>
+        </div>
       )}
 
-      <div className="flex flex-col gap-3">
-        {bookings?.map((booking) => (
-          <Link key={booking.id} to={routes.bookings.detail(booking.id)}>
-            <Card className="transition-colors hover:bg-muted/30">
-              <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
+      <div className="flex flex-col gap-4">
+        {bookings?.map((booking) => {
+          const eventKey = booking.eventId
+          const Icon = posterIcon(eventKey)
+          return (
+            <Link
+              key={booking.id}
+              to={routes.bookings.detail(booking.id)}
+              className="group flex overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10 transition-all hover:-translate-y-0.5 hover:ring-foreground/25"
+            >
+              <div
+                className={`relative flex w-24 shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br sm:w-32 ${posterGradient(eventKey)}`}
+              >
+                <Icon className="size-9 text-foreground/15 transition-transform duration-300 group-hover:scale-110 sm:size-11" />
+              </div>
+
+              <div className="flex flex-1 flex-col justify-between gap-3 p-4">
                 <div>
-                  <CardTitle className="text-base">{booking.event?.name ?? 'Event'}</CardTitle>
-                  <p className="text-xs text-muted-foreground">
+                  <h3 className="truncate text-sm font-semibold sm:text-base">
+                    {booking.event?.name ?? 'Event'}
+                  </h3>
+                  <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">
+                    <MapPin className="size-3 shrink-0" />
                     {booking.event && formatVenue(booking.event)}
-                    {booking.event?.date && (
-                      <> &middot; {new Date(booking.event.date).toLocaleDateString()}</>
-                    )}
                   </p>
+                  {booking.event?.date && (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(booking.event.date).toLocaleDateString(undefined, {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </p>
+                  )}
                 </div>
-                <TicketCheck className="size-5 shrink-0 text-primary" />
-              </CardHeader>
-              <CardContent className="flex items-center justify-between text-sm">
-                <span className="font-mono text-muted-foreground">{booking.ticketRef}</span>
-                <span className="font-medium">${(booking.priceCents / 100).toFixed(2)}</span>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+
+                <div className="flex items-center justify-between border-t border-dashed border-border pt-2.5">
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {booking.ticketRef}
+                  </span>
+                  <span className="text-sm font-semibold">
+                    ${(booking.priceCents / 100).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
