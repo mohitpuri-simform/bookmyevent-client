@@ -21,5 +21,6 @@ export const routes = {
     editEvent: (eventId: string) => `/organizer/events/${eventId}/edit`,
     eventSections: (eventId: string) => `/organizer/events/${eventId}/sections`,
     eventBookings: (eventId: string) => `/organizer/events/${eventId}/bookings`,
+    wallet: '/organizer/wallet',
   },
 } as const

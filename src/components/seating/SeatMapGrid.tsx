@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { displayRowLabel } from '@/lib/seatLabel'
 
 /** Display-level status: splits the backend's `HELD` into "by me" vs "by someone else" (CLAUDE.md §Core UX states). */
 export type SeatDisplayStatus = 'AVAILABLE' | 'HELD_BY_ME' | 'HELD_BY_OTHER' | 'BOOKED'
@@ -35,29 +36,6 @@ function seatColumnStart(col: number, aisleAfterSeat?: number | null): number {
     return col + 1
   }
   return col
-}
-
-/**
- * Spreadsheet-style row label (1 -> A, 26 -> Z, 27 -> AA, ...).
- */
-function rowLabel(n: number): string {
-  let label = ''
-  while (n > 0) {
-    const remainder = (n - 1) % 26
-    label = String.fromCharCode(65 + remainder) + label
-    n = Math.floor((n - 1) / 26)
-  }
-  return label
-}
-
-/**
- * `row` is 1-based within its own section with row 1 rendered at the top, so
- * labels naturally reset to "A" for every section rather than continuing
- * across the whole event. The sequence runs bottom-to-top: the last
- * (bottommost) row is "A" and letters increase going up toward the stage.
- */
-function displayRowLabel(row: number, totalRows: number): string {
-  return rowLabel(totalRows - row + 1)
 }
 
 export function SeatMapGrid({

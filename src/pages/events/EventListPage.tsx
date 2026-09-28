@@ -2,20 +2,28 @@ import { Loader2, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { routes } from '../../constants/routes'
+import { useAuth } from '../../hooks/auth/useAuth'
 import { useEventsQuery } from '../../hooks/events/useEventsQuery'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { formatVenue } from '../../lib/venue'
+import { ROLES } from '../../shared/constants/auth/role'
 
 export function EventListPage() {
   const { data: events, isLoading } = useEventsQuery()
+  const { user } = useAuth()
+  const isOrganiser = user?.role === ROLES.ORGANISER
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-16">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Upcoming events</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Grab the best seats before they're gone
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          {isOrganiser ? 'My events' : 'Upcoming events'}
+        </h1>
+        {!isOrganiser && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            Grab the best seats before they're gone
+          </p>
+        )}
       </div>
 
       {isLoading && (

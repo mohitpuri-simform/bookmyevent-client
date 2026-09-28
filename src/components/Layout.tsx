@@ -1,4 +1,4 @@
-import { LogOut, Ticket, TicketCheck, UserRound } from 'lucide-react'
+import { LogOut, Ticket, TicketCheck, UserRound, Wallet } from 'lucide-react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -86,6 +86,14 @@ export function Layout() {
                         <Link to={routes.bookings.list}>
                           <TicketCheck />
                           My bookings
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {user.role === ROLES.ORGANISER && (
+                      <DropdownMenuItem asChild>
+                        <Link to={routes.organizer.wallet}>
+                          <Wallet />
+                          Wallet
                         </Link>
                       </DropdownMenuItem>
                     )}

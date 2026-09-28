@@ -35,5 +35,8 @@ export const apiRoutes = {
     events: '/organiser/events',
     eventDetail: (eventId: string) => `/organiser/events/${eventId}`,
     eventBookings: (eventId: string) => `/organiser/events/${eventId}/bookings`,
+    stripeConnect: '/organiser/stripe/connect',
+    wallet: '/organiser/wallet',
+    walletWithdraw: '/organiser/wallet/withdraw',
   },
 } as const

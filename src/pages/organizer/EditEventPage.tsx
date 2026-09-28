@@ -80,13 +80,17 @@ export function EditEventPage() {
         <CardContent>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Event name</Label>
+              <Label htmlFor="name" required>
+                Event name
+              </Label>
               <Input id="name" type="text" aria-invalid={!!errors.name} {...register('name')} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="venueStreet">Street</Label>
+              <Label htmlFor="venueStreet" required>
+                Street
+              </Label>
               <Input
                 id="venueStreet"
                 type="text"
@@ -99,7 +103,9 @@ export function EditEventPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="venueCity">City</Label>
+              <Label htmlFor="venueCity" required>
+                City
+              </Label>
               <Input
                 id="venueCity"
                 type="text"
@@ -112,7 +118,9 @@ export function EditEventPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="venueState">State</Label>
+              <Label htmlFor="venueState" required>
+                State
+              </Label>
               <Input
                 id="venueState"
                 type="text"
@@ -125,13 +133,17 @@ export function EditEventPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="date">Start date</Label>
+              <Label htmlFor="date" required>
+                Start date
+              </Label>
               <Input id="date" type="date" aria-invalid={!!errors.date} {...register('date')} />
               {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="endDate">Expires at</Label>
+              <Label htmlFor="endDate" required>
+                Expires at
+              </Label>
               <Input
                 id="endDate"
                 type="datetime-local"

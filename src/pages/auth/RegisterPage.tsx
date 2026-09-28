@@ -60,7 +60,9 @@ export function RegisterPage() {
         <CardContent>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" required>
+                Name
+              </Label>
               <Input
                 id="name"
                 type="text"
@@ -72,7 +74,9 @@ export function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" required>
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -84,7 +88,9 @@ export function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" required>
+                Password
+              </Label>
               <PasswordInput
                 id="password"
                 autoComplete="new-password"
@@ -97,7 +103,9 @@ export function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="confirmPassword">Confirm password</Label>
+              <Label htmlFor="confirmPassword" required>
+                Confirm password
+              </Label>
               <PasswordInput
                 id="confirmPassword"
                 autoComplete="new-password"
@@ -110,7 +118,7 @@ export function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>I want to</Label>
+              <Label required>I want to</Label>
               <Controller
                 control={control}
                 name="role"

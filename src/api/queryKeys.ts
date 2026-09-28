@@ -41,4 +41,9 @@ export const queryKeys = {
   support: {
     createTicket: 'support-create-ticket',
   },
+  wallet: {
+    summary: 'wallet-summary',
+    connect: 'wallet-connect',
+    withdraw: 'wallet-withdraw',
+  },
 } as const

@@ -119,13 +119,17 @@ export function EventSectionsPage() {
           <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Section name</Label>
+                <Label htmlFor="name" required>
+                  Section name
+                </Label>
                 <Input id="name" type="text" aria-invalid={!!errors.name} {...register('name')} />
                 {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="price">Price ($)</Label>
+                <Label htmlFor="price" required>
+                  Price ($)
+                </Label>
                 <Input
                   id="price"
                   type="number"
@@ -138,7 +142,9 @@ export function EventSectionsPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="rows">Rows</Label>
+                <Label htmlFor="rows" required>
+                  Rows
+                </Label>
                 <Input
                   id="rows"
                   type="number"
@@ -151,7 +157,9 @@ export function EventSectionsPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="seatsPerRow">Seats per row</Label>
+                <Label htmlFor="seatsPerRow" required>
+                  Seats per row
+                </Label>
                 <Input
                   id="seatsPerRow"
                   type="number"

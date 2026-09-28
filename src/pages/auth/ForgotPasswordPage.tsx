@@ -81,7 +81,9 @@ export function ForgotPasswordPage() {
               noValidate
             >
               <div className="flex flex-col gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" required>
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -116,7 +118,7 @@ export function ForgotPasswordPage() {
               noValidate
             >
               <div className="flex flex-col items-center gap-2">
-                <Label>Verification code</Label>
+                <Label required>Verification code</Label>
                 <Controller
                   control={resetForm.control}
                   name="otp"
@@ -147,7 +149,9 @@ export function ForgotPasswordPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="newPassword">New password</Label>
+                <Label htmlFor="newPassword" required>
+                  New password
+                </Label>
                 <PasswordInput
                   id="newPassword"
                   autoComplete="new-password"
@@ -162,7 +166,9 @@ export function ForgotPasswordPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="confirmPassword">Confirm new password</Label>
+                <Label htmlFor="confirmPassword" required>
+                  Confirm new password
+                </Label>
                 <PasswordInput
                   id="confirmPassword"
                   autoComplete="new-password"

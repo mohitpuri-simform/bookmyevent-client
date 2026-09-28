@@ -21,4 +21,12 @@ export interface Booking {
     name: string
     email: string
   }
+  seat?: {
+    row: number
+    col: number
+    section: {
+      name: string
+      rows: number
+    }
+  }
 }

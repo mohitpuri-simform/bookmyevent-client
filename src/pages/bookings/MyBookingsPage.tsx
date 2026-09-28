@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { routes } from '../../constants/routes'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
+import { seatLabel } from '../../lib/seatLabel'
 import { formatVenue } from '../../lib/venue'
 
 export function MyBookingsPage() {
@@ -69,9 +70,17 @@ export function MyBookingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between border-t border-dashed border-border pt-2.5">
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {booking.ticketRef}
-                  </span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {booking.ticketRef}
+                    </span>
+                    {booking.seat && (
+                      <span className="text-xs text-muted-foreground">
+                        {booking.seat.section.name} &middot;{' '}
+                        {seatLabel(booking.seat.row, booking.seat.col, booking.seat.section.rows)}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm font-semibold">
                     ${(booking.priceCents / 100).toFixed(2)}
                   </span>

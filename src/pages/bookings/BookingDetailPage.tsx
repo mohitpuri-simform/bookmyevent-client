@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { routes } from '../../constants/routes'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
+import { seatLabel } from '../../lib/seatLabel'
 import { formatVenue } from '../../lib/venue'
 
 export function BookingDetailPage() {
@@ -70,6 +71,15 @@ export function BookingDetailPage() {
                 <span className="text-muted-foreground">Ticket reference</span>
                 <span className="font-mono">{booking.ticketRef}</span>
               </div>
+              {booking.seat && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Seat</span>
+                  <span className="font-medium">
+                    {booking.seat.section.name} &middot;{' '}
+                    {seatLabel(booking.seat.row, booking.seat.col, booking.seat.section.rows)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Price</span>
                 <span className="font-medium">${(booking.priceCents / 100).toFixed(2)}</span>

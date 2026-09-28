@@ -18,6 +18,7 @@ import { EditEventPage } from './pages/organizer/EditEventPage'
 import { EventSectionsPage } from './pages/organizer/EventSectionsPage'
 import { OrganizerBookingsPage } from './pages/organizer/OrganizerBookingsPage'
 import { OrganizerEventsPage } from './pages/organizer/OrganizerEventsPage'
+import { WalletPage } from './pages/organizer/WalletPage'
 import { ProfilePage } from './pages/profile/ProfilePage'
 import { ROLES } from './shared/constants/auth/role'
 
@@ -59,6 +60,7 @@ function App() {
             path={routes.organizer.eventBookings(':eventId')}
             element={<OrganizerBookingsPage />}
           />
+          <Route path={routes.organizer.wallet} element={<WalletPage />} />
         </Route>
       </Route>
     </Routes>

@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
 import { useOrganiserBookingsQuery } from '../../hooks/bookings/useOrganiserBookingsQuery'
+import { seatLabel } from '../../lib/seatLabel'
 import { formatVenue } from '../../lib/venue'
 
 export function OrganizerBookingsPage() {
@@ -82,7 +83,15 @@ export function OrganizerBookingsPage() {
               <span className="font-mono text-xs text-muted-foreground">{booking.ticketRef}</span>
             </CardHeader>
             <CardContent className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{booking.user?.email}</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-muted-foreground">{booking.user?.email}</span>
+                {booking.seat && (
+                  <span className="text-xs text-muted-foreground">
+                    {booking.seat.section.name} &middot;{' '}
+                    {seatLabel(booking.seat.row, booking.seat.col, booking.seat.section.rows)}
+                  </span>
+                )}
+              </div>
               <span className="font-medium">${(booking.priceCents / 100).toFixed(2)}</span>
             </CardContent>
           </Card>

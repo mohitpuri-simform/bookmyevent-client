@@ -54,7 +54,9 @@ export function ProfilePage() {
         <CardContent>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" required>
+                Name
+              </Label>
               <Input id="name" type="text" aria-invalid={!!errors.name} {...register('name')} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>

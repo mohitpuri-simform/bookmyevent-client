@@ -37,7 +37,9 @@ export function LoginPage() {
         <CardContent>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" required>
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -50,7 +52,9 @@ export function LoginPage() {
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" required>
+                  Password
+                </Label>
                 <Link
                   to={routes.auth.forgotPassword}
                   className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
