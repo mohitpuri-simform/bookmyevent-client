@@ -42,9 +42,9 @@ function hashString(value: string): number {
 }
 
 export function posterGradient(seed: string): string {
-  return POSTER_GRADIENTS[hashString(seed) % POSTER_GRADIENTS.length]
+  return POSTER_GRADIENTS[hashString(seed) % POSTER_GRADIENTS.length]!
 }
 
 export function posterIcon(seed: string): LucideIcon {
-  return POSTER_ICONS[hashString(`icon:${seed}`) % POSTER_ICONS.length]
+  return POSTER_ICONS[hashString(`icon:${seed}`) % POSTER_ICONS.length]!
 }
