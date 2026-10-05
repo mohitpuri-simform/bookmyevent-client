@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { apiRoutes } from '../../api/apiRoutes'
 import { apiClient } from '../../api/client'
 import { queryKeys } from '../../api/queryKeys'
@@ -14,7 +14,6 @@ import type { User } from '../../types/auth'
 export function useLoginMutation() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const location = useLocation()
 
   return useMutation({
     mutationKey: [queryKeys.auth.login],
@@ -24,8 +23,7 @@ export function useLoginMutation() {
       if (response.status === HTTP_STATUS.OK) {
         invalidateQuery(queryClient, [queryKeys.auth.me])
         showSuccessToast(response.data.message)
-        const redirectTo = (location.state as { from?: string } | null)?.from ?? routes.home
-        navigate(redirectTo, { replace: true })
+        navigate(routes.home, { replace: true })
       } else {
         showErrorToast()
       }
