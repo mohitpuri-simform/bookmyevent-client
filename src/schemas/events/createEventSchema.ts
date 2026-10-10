@@ -14,4 +14,16 @@ export const createEventSchema = z
     path: ['endDate'],
   })
 
+/**
+ * Create-only: a new event can't already be over. Editing uses the plain
+ * schema above, so an organiser can still edit an event that has started or ended.
+ */
+export const newEventSchema = createEventSchema.refine(
+  (data) => new Date(data.endDate) > new Date(),
+  {
+    message: 'End date must be in the future.',
+    path: ['endDate'],
+  },
+)
+
 export type CreateEventPayload = z.infer<typeof createEventSchema>

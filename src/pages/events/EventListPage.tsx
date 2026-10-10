@@ -1,15 +1,20 @@
 import { Loader2, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { Pagination } from '../../components/Pagination'
 import { routes } from '../../constants/routes'
 import { useAuth } from '../../hooks/auth/useAuth'
 import { useEventsQuery } from '../../hooks/events/useEventsQuery'
+import { usePageParam } from '../../hooks/usePageParam'
+import { hasEventEnded } from '../../lib/eventTime'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { formatVenue } from '../../lib/venue'
 import { ROLES } from '../../shared/constants/auth/role'
 
 export function EventListPage() {
-  const { data: events, isLoading } = useEventsQuery()
+  const [page, setPage] = usePageParam()
+  const { data, isLoading } = useEventsQuery(page)
+  const events = data?.items
   const { user } = useAuth()
   const isOrganiser = user?.role === ROLES.ORGANISER
 
@@ -39,6 +44,7 @@ export function EventListPage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
         {events?.map((event) => {
           const Icon = posterIcon(event.id)
+          const ended = hasEventEnded(event)
           return (
             <Link
               key={event.id}
@@ -48,8 +54,15 @@ export function EventListPage() {
               <div
                 className={`relative flex aspect-[2/3] items-center justify-center overflow-hidden bg-gradient-to-br p-4 ${posterGradient(event.id)}`}
               >
+                {ended && (
+                  <Badge className="absolute top-2 left-2 z-10 bg-destructive text-white">
+                    Ended
+                  </Badge>
+                )}
                 <Icon className="absolute size-20 text-foreground/10 transition-transform duration-300 group-hover:scale-110" />
-                <span className="relative line-clamp-4 text-center font-heading text-lg leading-tight font-bold text-foreground/90">
+                <span
+                  className={`relative line-clamp-4 text-center font-heading text-lg leading-tight font-bold text-foreground/90 ${ended ? 'opacity-50' : ''}`}
+                >
                   {event.name}
                 </span>
               </div>
@@ -70,6 +83,8 @@ export function EventListPage() {
           )
         })}
       </div>
+
+      <Pagination pagination={data?.pagination} onPageChange={setPage} />
     </div>
   )
 }

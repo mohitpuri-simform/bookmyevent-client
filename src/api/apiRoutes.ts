@@ -12,6 +12,8 @@ export const apiRoutes = {
   events: {
     list: '/events',
     detail: (eventId: string) => `/events/${eventId}`,
+    publish: (eventId: string) => `/events/${eventId}/publish`,
+    unpublish: (eventId: string) => `/events/${eventId}/unpublish`,
     sections: (eventId: string) => `/events/${eventId}/sections`,
     section: (eventId: string, sectionId: string) => `/events/${eventId}/sections/${sectionId}`,
     reorderSections: (eventId: string) => `/events/${eventId}/sections/reorder`,
@@ -27,6 +29,7 @@ export const apiRoutes = {
   me: {
     holds: '/me/holds',
     bookings: '/me/bookings',
+    booking: (bookingId: string) => `/me/bookings/${bookingId}`,
   },
   support: {
     tickets: '/support/tickets',

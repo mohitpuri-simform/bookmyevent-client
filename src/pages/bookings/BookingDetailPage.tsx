@@ -2,16 +2,14 @@ import { AlertTriangle, ArrowLeft, Loader2, MapPin } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { routes } from '../../constants/routes'
-import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
+import { useMyBookingQuery } from '../../hooks/bookings/useMyBookingQuery'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { seatLabel } from '../../lib/seatLabel'
 import { formatVenue } from '../../lib/venue'
 
 export function BookingDetailPage() {
   const { bookingId } = useParams<{ bookingId: string }>()
-  const { data: bookings, isLoading } = useMyBookingsQuery()
-
-  const booking = bookings?.find((b) => b.id === bookingId)
+  const { data: booking, isLoading } = useMyBookingQuery(bookingId)
   const Icon = posterIcon(booking?.eventId ?? '')
 
   return (

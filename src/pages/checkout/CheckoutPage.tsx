@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { HoldCountdown } from '../../components/checkout/HoldCountdown'
 import { PaymentForm } from '../../components/checkout/PaymentForm'
 import { routes } from '../../constants/routes'
+import { MAX_PAGE_SIZE } from '../../constants/pagination'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
 import { useCheckoutStatusQuery } from '../../hooks/checkout/useCheckoutStatusQuery'
 import { useCreateCheckoutMutation } from '../../hooks/checkout/useCreateCheckoutMutation'
@@ -28,9 +29,11 @@ export function CheckoutPage() {
   const [checkout, setCheckout] = useState<CheckoutResult | null>(null)
   const [failureMessage, setFailureMessage] = useState<string | null>(null)
 
-  const { data: bookings } = useMyBookingsQuery({
+  const { data: bookingsPage } = useMyBookingsQuery({
+    limit: MAX_PAGE_SIZE,
     refetchInterval: state === 'confirming' ? 2000 : false,
   })
+  const bookings = bookingsPage?.items
 
   // A Stripe.js success callback only means Stripe took the charge — the
   // backend's webhook can still reject it (e.g. the hold expired before the

@@ -2,6 +2,8 @@ import { AxiosError } from 'axios'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Pagination } from '../../components/Pagination'
+import { usePageParam } from '../../hooks/usePageParam'
 import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
 import { useOrganiserBookingsQuery } from '../../hooks/bookings/useOrganiserBookingsQuery'
 import { seatLabel } from '../../lib/seatLabel'
@@ -10,7 +12,9 @@ import { formatVenue } from '../../lib/venue'
 export function OrganizerBookingsPage() {
   const { eventId } = useParams<{ eventId: string }>()
   const { data: event } = useMyEventQuery(eventId)
-  const { data: bookings, isLoading, isError, error } = useOrganiserBookingsQuery(eventId)
+  const [page, setPage] = usePageParam()
+  const { data, isLoading, isError, error } = useOrganiserBookingsQuery(eventId, page)
+  const bookings = data?.items
 
   const isForbiddenOrMissing =
     isError && error instanceof AxiosError && [403, 404].includes(error.response?.status ?? 0)
@@ -97,6 +101,8 @@ export function OrganizerBookingsPage() {
           </Card>
         ))}
       </div>
+
+      <Pagination pagination={data?.pagination} onPageChange={setPage} />
     </div>
   )
 }

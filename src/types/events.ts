@@ -1,3 +1,7 @@
+import type { EventStatus } from '../shared/constants/event/status'
+
+export type { EventStatus }
+
 export interface Event {
   id: string
   name: string
@@ -6,6 +10,7 @@ export interface Event {
   venueState: string
   date: string
   endDate: string
+  status: EventStatus
   organiserId: string
   createdAt: string
   updatedAt: string

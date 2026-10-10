@@ -1,10 +1,15 @@
 import { CalendarCheck, Loader2, Plus, TicketCheck } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Pagination } from '../../components/Pagination'
 import { routes } from '../../constants/routes'
 import { useMyEventsQuery } from '../../hooks/events/useMyEventsQuery'
+import { usePageParam } from '../../hooks/usePageParam'
+import { hasEventEnded } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
+import { EVENT_STATUS } from '../../shared/constants/event/status'
 
 function SeatOccupancy({ bookedSeats, totalSeats }: { bookedSeats: number; totalSeats: number }) {
   const emptySeats = totalSeats - bookedSeats
@@ -25,7 +30,9 @@ function SeatOccupancy({ bookedSeats, totalSeats }: { bookedSeats: number; total
 }
 
 export function OrganizerEventsPage() {
-  const { data: events, isLoading } = useMyEventsQuery()
+  const [page, setPage] = usePageParam()
+  const { data, isLoading } = useMyEventsQuery(page)
+  const events = data?.items
   const navigate = useNavigate()
 
   return (
@@ -59,9 +66,19 @@ export function OrganizerEventsPage() {
           <Link key={event.id} to={routes.organizer.eventSections(event.id)}>
             <Card className="h-full transition-colors hover:bg-muted/50">
               <CardHeader>
-                <span className="mb-1 flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <CalendarCheck className="size-4.5" />
-                </span>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <CalendarCheck className="size-4.5" />
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {hasEventEnded(event) && <Badge variant="destructive">Ended</Badge>}
+                    <Badge
+                      variant={event.status === EVENT_STATUS.PUBLISHED ? 'default' : 'secondary'}
+                    >
+                      {event.status === EVENT_STATUS.PUBLISHED ? 'Published' : 'Draft'}
+                    </Badge>
+                  </div>
+                </div>
                 <CardTitle>{event.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
@@ -94,6 +111,8 @@ export function OrganizerEventsPage() {
           </Link>
         ))}
       </div>
+
+      <Pagination pagination={data?.pagination} onPageChange={setPage} />
     </div>
   )
 }

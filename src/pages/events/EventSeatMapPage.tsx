@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { CalendarX, Loader2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { queryKeys } from '../../api/queryKeys'
@@ -13,6 +13,7 @@ import { useMyHoldsQuery } from '../../hooks/holds/useMyHoldsQuery'
 import { useReleaseHoldMutation } from '../../hooks/holds/useReleaseHoldMutation'
 import { useSectionsQuery } from '../../hooks/sections/useSectionsQuery'
 import { invalidateQuery } from '../../lib/queryClient'
+import { hasEventEnded } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
 
 export function EventSeatMapPage() {
@@ -38,8 +39,11 @@ export function EventSeatMapPage() {
   }, [myHolds])
 
   const isLoading = isLoadingEvent || isLoadingSections
+  const eventEnded = event ? hasEventEnded(event) : false
 
   function handleSeatClick(seatId: string) {
+    if (eventEnded) return
+
     const existingHoldId = holdBySeatId.get(seatId)
     if (existingHoldId) {
       releaseHoldMutation.mutate(existingHoldId)
@@ -63,6 +67,16 @@ export function EventSeatMapPage() {
       {isLoading && (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
+      {event && eventEnded && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <CalendarX className="size-5 shrink-0" />
+          <div>
+            <p className="font-medium">This event has ended</p>
+            <p className="text-destructive/80">Seats can no longer be booked.</p>
+          </div>
         </div>
       )}
 
@@ -100,7 +114,9 @@ export function EventSeatMapPage() {
                     status: seatDisplayStatus(seat.id, seat.status),
                   }))}
                   onSeatClick={handleSeatClick}
-                  disabled={holdSeatMutation.isPending || releaseHoldMutation.isPending}
+                  disabled={
+                    eventEnded || holdSeatMutation.isPending || releaseHoldMutation.isPending
+                  }
                 />
               </div>
             </div>

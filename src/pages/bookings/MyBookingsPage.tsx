@@ -1,13 +1,17 @@
 import { Loader2, MapPin, TicketCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { Pagination } from '../../components/Pagination'
 import { routes } from '../../constants/routes'
 import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
+import { usePageParam } from '../../hooks/usePageParam'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { seatLabel } from '../../lib/seatLabel'
 import { formatVenue } from '../../lib/venue'
 
 export function MyBookingsPage() {
-  const { data: bookings, isLoading } = useMyBookingsQuery()
+  const [page, setPage] = usePageParam()
+  const { data, isLoading } = useMyBookingsQuery({ page })
+  const bookings = data?.items
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-16">
@@ -90,6 +94,8 @@ export function MyBookingsPage() {
           )
         })}
       </div>
+
+      <Pagination pagination={data?.pagination} onPageChange={setPage} />
     </div>
   )
 }

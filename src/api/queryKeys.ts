@@ -17,6 +17,8 @@ export const queryKeys = {
     detail: 'events-detail',
     create: 'events-create',
     update: 'events-update',
+    publish: 'events-publish',
+    unpublish: 'events-unpublish',
   },
   sections: {
     list: 'sections-list',
@@ -36,6 +38,7 @@ export const queryKeys = {
   },
   bookings: {
     mine: 'bookings-mine',
+    mineDetail: 'bookings-mine-detail',
     organiser: 'bookings-organiser',
   },
   support: {

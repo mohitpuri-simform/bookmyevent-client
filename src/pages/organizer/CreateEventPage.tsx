@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCreateEventMutation } from '../../hooks/events/useCreateEventMutation'
-import { createEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
+import { newEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
+import { nowDatetimeLocalValue, todayInputValue } from '../../lib/eventTime'
 
 export function CreateEventPage() {
   const {
@@ -14,7 +15,7 @@ export function CreateEventPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<CreateEventPayload>({
-    resolver: zodResolver(createEventSchema),
+    resolver: zodResolver(newEventSchema),
   })
 
   const createEventMutation = useCreateEventMutation()
@@ -92,7 +93,13 @@ export function CreateEventPage() {
               <Label htmlFor="date" required>
                 Start date
               </Label>
-              <Input id="date" type="date" aria-invalid={!!errors.date} {...register('date')} />
+              <Input
+                id="date"
+                type="date"
+                min={todayInputValue()}
+                aria-invalid={!!errors.date}
+                {...register('date')}
+              />
               {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
             </div>
 
@@ -103,6 +110,7 @@ export function CreateEventPage() {
               <Input
                 id="endDate"
                 type="datetime-local"
+                min={nowDatetimeLocalValue()}
                 aria-invalid={!!errors.endDate}
                 {...register('endDate')}
               />

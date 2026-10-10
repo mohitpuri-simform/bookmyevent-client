@@ -29,3 +29,8 @@ export interface ApiErrorBody {
   message: string
   errors?: ApiErrorField[]
 }
+
+export interface PaginatedResult<T> {
+  items: T[]
+  pagination: PaginationMeta
+}

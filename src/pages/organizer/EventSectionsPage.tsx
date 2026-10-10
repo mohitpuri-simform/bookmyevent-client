@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Loader2, Pencil, Plus } from 'lucide-react'
+import { AlertTriangle, Eye, EyeOff, Loader2, Pencil, Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,10 +13,14 @@ import { SeatMapGrid } from '../../components/seating/SeatMapGrid'
 import { StageBanner } from '../../components/seating/StageBanner'
 import { routes } from '../../constants/routes'
 import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
+import { usePublishEventMutation } from '../../hooks/events/usePublishEventMutation'
+import { useUnpublishEventMutation } from '../../hooks/events/useUnpublishEventMutation'
 import { useCreateSectionMutation } from '../../hooks/sections/useCreateSectionMutation'
 import { useReorderSectionsMutation } from '../../hooks/sections/useReorderSectionsMutation'
 import { useSectionsQuery } from '../../hooks/sections/useSectionsQuery'
+import { hasEventEnded } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
+import { EVENT_STATUS } from '../../shared/constants/event/status'
 import {
   createSectionSchema,
   type CreateSectionFormInput,
@@ -26,6 +31,8 @@ export function EventSectionsPage() {
   const { eventId } = useParams<{ eventId: string }>()
   const { data: event, isLoading: isLoadingEvent, isError: isEventError } = useMyEventQuery(eventId)
   const { data: sections, isLoading: isLoadingSections } = useSectionsQuery(eventId)
+  const publishMutation = usePublishEventMutation(eventId!)
+  const unpublishMutation = useUnpublishEventMutation(eventId!)
   const createSectionMutation = useCreateSectionMutation(eventId!)
   const reorderSectionsMutation = useReorderSectionsMutation(eventId!)
 
@@ -96,20 +103,67 @@ export function EventSectionsPage() {
     )
   }
 
+  const isPublished = event.status === EVENT_STATUS.PUBLISHED
+  const hasSections = (sections?.length ?? 0) > 0
+  const hasEnded = hasEventEnded(event)
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-16">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{event.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight">{event.name}</h1>
+            {hasEnded && <Badge variant="destructive">Ended</Badge>}
+            <Badge variant={isPublished ? 'default' : 'secondary'}>
+              {isPublished ? 'Published' : 'Draft'}
+            </Badge>
+          </div>
           <p className="text-sm text-muted-foreground">{formatVenue(event)}</p>
         </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link to={routes.organizer.editEvent(event.id)}>
-            <Pencil />
-            Edit event
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link to={routes.organizer.editEvent(event.id)}>
+              <Pencil />
+              Edit event
+            </Link>
+          </Button>
+          {isPublished ? (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={unpublishMutation.isPending}
+              onClick={() => unpublishMutation.mutate()}
+            >
+              {unpublishMutation.isPending ? <Loader2 className="animate-spin" /> : <EyeOff />}
+              Unpublish
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              disabled={!hasSections || hasEnded || publishMutation.isPending}
+              onClick={() => publishMutation.mutate()}
+            >
+              {publishMutation.isPending ? <Loader2 className="animate-spin" /> : <Eye />}
+              Publish
+            </Button>
+          )}
+        </div>
       </div>
+
+      {hasEnded && (
+        <p className="-mt-4 text-sm text-muted-foreground">
+          This event has ended, so seats can no longer be booked. You can still edit it
+          {isPublished ? '.' : ', but it can no longer be published.'}
+        </p>
+      )}
+
+      {!isPublished && !hasEnded && (
+        <p className="-mt-4 text-sm text-muted-foreground">
+          {hasSections
+            ? 'This event is a draft — only you can see it. Publish it when your seating is ready.'
+            : 'This event is a draft — only you can see it. Add at least one section before you can publish.'}
+        </p>
+      )}
 
       <Card>
         <CardHeader>
