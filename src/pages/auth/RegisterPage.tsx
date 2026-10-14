@@ -37,6 +37,7 @@ export function RegisterPage() {
     control,
     formState: { errors },
   } = useForm<RegisterFormValues>({
+    mode: 'onTouched',
     resolver: zodResolver(registerSchema),
     defaultValues: { role: ROLES.USER },
   })

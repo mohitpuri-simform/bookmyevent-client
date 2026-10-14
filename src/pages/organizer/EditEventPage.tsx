@@ -11,12 +11,6 @@ import { useMyEventQuery } from '../../hooks/events/useMyEventQuery'
 import { useUpdateEventMutation } from '../../hooks/events/useUpdateEventMutation'
 import { createEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
 
-function toDatetimeLocalValue(isoDate: string): string {
-  const date = new Date(isoDate)
-  const offsetMs = date.getTimezoneOffset() * 60_000
-  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16)
-}
-
 export function EditEventPage() {
   const { eventId } = useParams<{ eventId: string }>()
   const { data: event, isLoading, isError } = useMyEventQuery(eventId)
@@ -28,6 +22,7 @@ export function EditEventPage() {
     reset,
     formState: { errors },
   } = useForm<CreateEventPayload>({
+    mode: 'onTouched',
     resolver: zodResolver(createEventSchema),
   })
 
@@ -39,7 +34,7 @@ export function EditEventPage() {
         venueCity: event.venueCity,
         venueState: event.venueState,
         date: event.date.slice(0, 10),
-        endDate: toDatetimeLocalValue(event.endDate),
+        endDate: event.endDate.slice(0, 10),
       })
     }
   }, [event, reset])
@@ -142,11 +137,11 @@ export function EditEventPage() {
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="endDate" required>
-                Expires at
+                End date
               </Label>
               <Input
                 id="endDate"
-                type="datetime-local"
+                type="date"
                 aria-invalid={!!errors.endDate}
                 {...register('endDate')}
               />

@@ -16,7 +16,7 @@ export function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginPayload>({ resolver: zodResolver(loginSchema) })
+  } = useForm<LoginPayload>({ mode: 'onTouched', resolver: zodResolver(loginSchema) })
 
   const loginMutation = useLoginMutation()
 

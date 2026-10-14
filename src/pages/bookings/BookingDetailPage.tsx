@@ -5,6 +5,7 @@ import { routes } from '../../constants/routes'
 import { useMyBookingQuery } from '../../hooks/bookings/useMyBookingQuery'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { seatLabel } from '../../lib/seatLabel'
+import { formatEventEnd, formatEventStart } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
 
 export function BookingDetailPage() {
@@ -55,11 +56,9 @@ export function BookingDetailPage() {
                   <MapPin className="size-3.5 shrink-0 text-muted-foreground" />
                   {formatVenue(booking.event)}
                 </p>
-                <p className="text-muted-foreground">
-                  {new Date(booking.event.date).toLocaleString(undefined, {
-                    dateStyle: 'long',
-                    timeStyle: 'short',
-                  })}
+                <p className="text-muted-foreground">{formatEventStart(booking.event.date)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatEventEnd(booking.event.endDate)}
                 </p>
               </div>
             )}

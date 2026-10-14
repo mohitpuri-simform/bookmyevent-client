@@ -4,10 +4,20 @@ import { ROLES } from '../../shared/constants/auth/role'
 
 export const registerSchema = z
   .object({
-    name: z.string().min(2, messages.validation.name.minLength),
-    email: z.string().email(messages.validation.email.invalid),
-    password: z.string().min(8, messages.validation.password.minLength),
-    confirmPassword: z.string().min(8, messages.validation.password.minLength),
+    name: z
+      .string()
+      .trim()
+      .min(2, messages.validation.name.minLength)
+      .max(100, messages.validation.name.maxLength),
+    email: z.string().trim().email(messages.validation.email.invalid),
+    password: z
+      .string()
+      .min(8, messages.validation.password.minLength)
+      .max(72, messages.validation.password.maxLength),
+    confirmPassword: z
+      .string()
+      .min(8, messages.validation.password.minLength)
+      .max(72, messages.validation.password.maxLength),
     role: z.enum([ROLES.USER, ROLES.ORGANISER]),
   })
   .refine((data) => data.password === data.confirmPassword, {

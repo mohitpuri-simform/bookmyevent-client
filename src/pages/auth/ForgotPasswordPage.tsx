@@ -28,9 +28,11 @@ export function ForgotPasswordPage() {
   const [step, setStep] = useState<Step>('email')
 
   const emailForm = useForm<ForgotPasswordPayload>({
+    mode: 'onTouched',
     resolver: zodResolver(forgotPasswordSchema),
   })
   const resetForm = useForm<ResetPasswordFormValues>({
+    mode: 'onTouched',
     resolver: zodResolver(resetPasswordFormSchema),
   })
 

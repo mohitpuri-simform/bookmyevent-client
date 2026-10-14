@@ -1,7 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { CalendarX, Loader2 } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import { apiRoutes } from '../../api/apiRoutes'
+import { apiClient } from '../../api/client'
+import { toast } from 'sonner'
+import { MAX_HOLDS_PER_USER } from '../../constants/holds'
 import { queryKeys } from '../../api/queryKeys'
 import { CartBar } from '../../components/checkout/CartBar'
 import { SeatMapGrid, type SeatDisplayStatus } from '../../components/seating/SeatMapGrid'
@@ -13,7 +17,7 @@ import { useMyHoldsQuery } from '../../hooks/holds/useMyHoldsQuery'
 import { useReleaseHoldMutation } from '../../hooks/holds/useReleaseHoldMutation'
 import { useSectionsQuery } from '../../hooks/sections/useSectionsQuery'
 import { invalidateQuery } from '../../lib/queryClient'
-import { hasEventEnded } from '../../lib/eventTime'
+import { formatEventEnd, formatEventStart, hasEventEnded } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
 
 export function EventSeatMapPage() {
@@ -22,9 +26,39 @@ export function EventSeatMapPage() {
 
   const { data: event, isLoading: isLoadingEvent } = useEventQuery(eventId)
   const { data: sections, isLoading: isLoadingSections } = useSectionsQuery(eventId)
-  const { data: myHolds } = useMyHoldsQuery()
+  const { data: allHolds } = useMyHoldsQuery()
 
-  const holdSeatMutation = useHoldSeatMutation(eventId ?? '')
+  // The cart is scoped to the event being viewed; holds on other events
+  // are never shown here (the server drops them once a new event is held).
+  const myHolds = useMemo(() => {
+    if (!allHolds) return allHolds
+    const holds = allHolds.holds.filter((h) => h.eventId === eventId)
+    const effectiveExpiresAt = holds.length
+      ? holds.reduce((min, h) => (h.expiresAt < min ? h.expiresAt : min), holds[0]!.expiresAt)
+      : null
+    return { holds, effectiveExpiresAt }
+  }, [allHolds, eventId])
+
+  // Leaving the event page without going to checkout releases its holds.
+  const holdIdsRef = useRef<string[]>([])
+  const proceedingToCheckout = useRef(false)
+  holdIdsRef.current = myHolds?.holds.map((h) => h.holdId) ?? []
+  useEffect(() => {
+    proceedingToCheckout.current = false
+    return () => {
+      if (proceedingToCheckout.current) return
+      const ids = holdIdsRef.current
+      if (ids.length === 0) return
+      void Promise.allSettled(ids.map((id) => apiClient.delete(apiRoutes.holds.release(id)))).then(
+        () => {
+          invalidateQuery(queryClient, [queryKeys.holds.mine])
+          invalidateQuery(queryClient, [queryKeys.sections.list])
+        },
+      )
+    }
+  }, [eventId, queryClient])
+
+  const holdSeatMutation = useHoldSeatMutation(eventId ?? '', event?.name)
   const releaseHoldMutation = useReleaseHoldMutation(eventId ?? '')
 
   function handleHoldExpire() {
@@ -47,6 +81,11 @@ export function EventSeatMapPage() {
     const existingHoldId = holdBySeatId.get(seatId)
     if (existingHoldId) {
       releaseHoldMutation.mutate(existingHoldId)
+      return
+    }
+
+    if ((myHolds?.holds.length ?? 0) >= MAX_HOLDS_PER_USER) {
+      toast.error(`You can hold at most ${MAX_HOLDS_PER_USER} seats at a time`)
       return
     }
 
@@ -84,7 +123,8 @@ export function EventSeatMapPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{event.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {formatVenue(event)} &middot; {new Date(event.date).toLocaleDateString()}
+            {formatVenue(event)} &middot; {formatEventStart(event.date)} &middot;{' '}
+            {formatEventEnd(event.endDate)}
           </p>
         </div>
       )}
@@ -132,6 +172,9 @@ export function EventSeatMapPage() {
           for (const h of myHolds?.holds ?? []) releaseHoldMutation.mutate(h.holdId)
         }}
         onExpire={handleHoldExpire}
+        onCheckout={() => {
+          proceedingToCheckout.current = true
+        }}
       />
     </div>
   )

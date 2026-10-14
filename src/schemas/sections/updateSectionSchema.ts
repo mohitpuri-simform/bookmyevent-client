@@ -1,8 +1,13 @@
 import { z } from 'zod'
+import { priceField } from './createSectionSchema'
 
 export const updateSectionSchema = z.object({
-  name: z.string().trim().min(1, 'Section name is required.').max(100),
-  price: z.coerce.number().min(0, 'Price cannot be negative.'),
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Section name is required.')
+    .max(100, 'Section name must be at most 100 characters.'),
+  price: priceField,
 })
 
 export type UpdateSectionFormInput = z.input<typeof updateSectionSchema>

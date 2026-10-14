@@ -6,6 +6,7 @@ import { useMyBookingsQuery } from '../../hooks/bookings/useMyBookingsQuery'
 import { usePageParam } from '../../hooks/usePageParam'
 import { posterGradient, posterIcon } from '../../lib/eventPoster'
 import { seatLabel } from '../../lib/seatLabel'
+import { formatEventEnd, formatEventStart } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
 
 export function MyBookingsPage() {
@@ -64,11 +65,9 @@ export function MyBookingsPage() {
                   </p>
                   {booking.event?.date && (
                     <p className="text-xs text-muted-foreground">
-                      {new Date(booking.event.date).toLocaleDateString(undefined, {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
+                      {formatEventStart(booking.event.date)}
+                      {' · '}
+                      {formatEventEnd(booking.event.endDate)}
                     </p>
                   )}
                 </div>

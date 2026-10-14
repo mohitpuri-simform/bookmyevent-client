@@ -22,6 +22,7 @@ export function ProfilePage() {
     handleSubmit,
     formState: { errors, isDirty },
   } = useForm<UpdateProfilePayload>({
+    mode: 'onTouched',
     resolver: zodResolver(updateProfileSchema),
     values: { name: user?.name ?? '' },
   })

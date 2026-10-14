@@ -8,6 +8,21 @@ interface PaginationProps {
   onPageChange: (page: number, replace?: boolean) => void
 }
 
+// 1 … 4 5 6 … 20: first, last, and a window around the current page.
+function getPageItems(page: number, totalPages: number): Array<number | 'gap'> {
+  const pages = new Set([1, totalPages])
+  for (let p = page - 1; p <= page + 1; p++) {
+    if (p >= 1 && p <= totalPages) pages.add(p)
+  }
+  const sorted = [...pages].sort((a, b) => a - b)
+  const items: Array<number | 'gap'> = []
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1]! > 1) items.push('gap')
+    items.push(p)
+  })
+  return items
+}
+
 export function Pagination({ pagination, onPageChange }: PaginationProps) {
   // The list can shrink while you're on its last page (an event gets
   // unpublished, say) or the URL can say ?page=99. The API answers that with an
@@ -33,18 +48,41 @@ export function Pagination({ pagination, onPageChange }: PaginationProps) {
         Page <span className="font-medium text-foreground">{page}</span> of {totalPages} &middot;{' '}
         {total} total
       </p>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => goTo(page - 1)}>
-          <ChevronLeft />
-          Previous
-        </Button>
+      <div className="flex items-center gap-1">
         <Button
           variant="outline"
           size="sm"
+          aria-label="Previous page"
+          disabled={page <= 1}
+          onClick={() => goTo(page - 1)}
+        >
+          <ChevronLeft />
+        </Button>
+        {getPageItems(page, totalPages).map((item, i) =>
+          item === 'gap' ? (
+            <span key={`gap-${i}`} className="px-1 text-sm text-muted-foreground">
+              &hellip;
+            </span>
+          ) : (
+            <Button
+              key={item}
+              variant={item === page ? 'default' : 'outline'}
+              size="sm"
+              aria-label={`Page ${item}`}
+              aria-current={item === page ? 'page' : undefined}
+              onClick={() => item !== page && goTo(item)}
+            >
+              {item}
+            </Button>
+          ),
+        )}
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label="Next page"
           disabled={page >= totalPages}
           onClick={() => goTo(page + 1)}
         >
-          Next
           <ChevronRight />
         </Button>
       </div>

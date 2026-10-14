@@ -7,7 +7,7 @@ import { Pagination } from '../../components/Pagination'
 import { routes } from '../../constants/routes'
 import { useMyEventsQuery } from '../../hooks/events/useMyEventsQuery'
 import { usePageParam } from '../../hooks/usePageParam'
-import { hasEventEnded } from '../../lib/eventTime'
+import { formatEventEnd, formatEventStart, hasEventEnded } from '../../lib/eventTime'
 import { formatVenue } from '../../lib/venue'
 import { EVENT_STATUS } from '../../shared/constants/event/status'
 
@@ -84,8 +84,7 @@ export function OrganizerEventsPage() {
               <CardContent className="flex flex-col gap-2">
                 <p className="text-sm text-muted-foreground">{formatVenue(event)}</p>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(event.date).toLocaleDateString()} &ndash;{' '}
-                  {new Date(event.endDate).toLocaleString()}
+                  {formatEventStart(event.date)} &middot; {formatEventEnd(event.endDate)}
                 </p>
 
                 <SeatOccupancy

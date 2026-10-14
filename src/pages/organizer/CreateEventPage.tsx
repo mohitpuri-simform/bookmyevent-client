@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCreateEventMutation } from '../../hooks/events/useCreateEventMutation'
 import { newEventSchema, type CreateEventPayload } from '../../schemas/events/createEventSchema'
-import { nowDatetimeLocalValue, todayInputValue } from '../../lib/eventTime'
+import { todayInputValue } from '../../lib/eventTime'
 
 export function CreateEventPage() {
   const {
@@ -15,6 +15,7 @@ export function CreateEventPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<CreateEventPayload>({
+    mode: 'onTouched',
     resolver: zodResolver(newEventSchema),
   })
 
@@ -105,12 +106,12 @@ export function CreateEventPage() {
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="endDate" required>
-                Expires at
+                End date
               </Label>
               <Input
                 id="endDate"
-                type="datetime-local"
-                min={nowDatetimeLocalValue()}
+                type="date"
+                min={todayInputValue()}
                 aria-invalid={!!errors.endDate}
                 {...register('endDate')}
               />

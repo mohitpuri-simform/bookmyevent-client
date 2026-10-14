@@ -43,6 +43,7 @@ export function EventSectionsPage() {
     reset,
     formState: { errors },
   } = useForm<CreateSectionFormInput, unknown, CreateSectionPayload>({
+    mode: 'onTouched',
     resolver: zodResolver(createSectionSchema),
   })
 

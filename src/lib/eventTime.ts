@@ -1,24 +1,34 @@
 /**
  * Display-only: the backend is what actually refuses to sell an ended event
- * (it uses the same rule — over once `endDate` has passed). This just lets the
+ * (same rule — an event is expired from the day after its `endDate`). This just lets the
  * UI say so up front instead of waiting for a rejected hold.
  */
 export function hasEventEnded(event: { endDate: string }): boolean {
-  return new Date(event.endDate).getTime() <= Date.now()
+  return event.endDate.slice(0, 10) < todayInputValue()
 }
 
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
-}
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
 
-/** Today's date as `yyyy-mm-dd` in the user's timezone, for `<input type="date" min>`. */
+/** Today's date in IST (the app's fixed timezone) as `yyyy-mm-dd`, for `<input type="date" min>`. */
 export function todayInputValue(): string {
-  const now = new Date()
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  return new Date(Date.now() + IST_OFFSET_MS).toISOString().slice(0, 10)
 }
 
-/** Now as `yyyy-mm-ddThh:mm` in the user's timezone, for `<input type="datetime-local" min>`. */
-export function nowDatetimeLocalValue(): string {
-  const now = new Date()
-  return `${todayInputValue()}T${pad(now.getHours())}:${pad(now.getMinutes())}`
+function formatDay(value: string): string {
+  return new Date(value).toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+}
+
+/** e.g. `Starts 12 Oct 2026` — events are scheduled by day, not time. */
+export function formatEventStart(date: string): string {
+  return `Starts ${formatDay(date)}`
+}
+
+/** e.g. `Ends 14 Oct 2026`. */
+export function formatEventEnd(endDate: string): string {
+  return `Ends ${formatDay(endDate)}`
 }

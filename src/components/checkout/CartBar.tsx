@@ -11,6 +11,7 @@ interface CartBarProps {
   isReleasing: boolean
   onClearAll: () => void
   onExpire: () => void
+  onCheckout: () => void
 }
 
 export function CartBar({
@@ -19,6 +20,7 @@ export function CartBar({
   isReleasing,
   onClearAll,
   onExpire,
+  onCheckout,
 }: CartBarProps) {
   const navigate = useNavigate()
 
@@ -38,6 +40,7 @@ export function CartBar({
               {holds.length} seat{holds.length > 1 ? 's' : ''} held &middot; $
               {(totalCents / 100).toFixed(2)}
             </span>
+            <span className="text-xs text-muted-foreground">{holds[0]!.eventName}</span>
             <span className="text-xs text-muted-foreground">
               Hold expires in <HoldCountdown expiresAt={effectiveExpiresAt} onExpire={onExpire} />
             </span>
@@ -48,7 +51,13 @@ export function CartBar({
             {isReleasing && <Loader2 className="animate-spin" />}
             Clear
           </Button>
-          <Button size="sm" onClick={() => navigate(routes.checkout)}>
+          <Button
+            size="sm"
+            onClick={() => {
+              onCheckout()
+              navigate(routes.checkout)
+            }}
+          >
             Checkout
           </Button>
         </div>

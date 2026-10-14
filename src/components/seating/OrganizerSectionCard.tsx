@@ -46,6 +46,7 @@ export function OrganizerSectionCard({
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateSectionFormInput, unknown, UpdateSectionPayload>({
+    mode: 'onTouched',
     resolver: zodResolver(updateSectionSchema),
     defaultValues: {
       name: section.name,

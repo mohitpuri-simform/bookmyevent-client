@@ -10,6 +10,7 @@ export interface HoldView {
   holdId: string
   seatId: string
   eventId: string
+  eventName: string
   sectionId: string
   row: number
   col: number
